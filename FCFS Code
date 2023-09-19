@@ -1,0 +1,41 @@
+def calculate_times(processes):
+    current_time = 0
+
+    for process in processes:
+        arrival_time, burst_time = process
+        if current_time < arrival_time:
+            current_time = arrival_time
+
+        completion_time = current_time + burst_time
+        turnaround_time = completion_time - arrival_time
+        waiting_time = turnaround_time - burst_time
+
+        process.extend([completion_time, turnaround_time, waiting_time])
+
+        current_time = completion_time
+
+def display_results(processes):
+    total_turnaround_time = 0
+    total_burst_time = 0
+    print("\nProcess\tArrival Time\tBurst Time\tCompletion Time\tTurnaround Time\tWaiting Time")
+    for i, process in enumerate(processes):
+        total_turnaround_time += process[3]  # Turnaround Time
+        total_burst_time += process[1]  # Burst Time
+        print(f"{i + 1}\t{process[0]}\t\t{process[1]}\t\t{process[2]}\t\t{process[3]}\t\t{process[4]}")
+   
+    average_turnaround_time = total_turnaround_time / len(processes)
+    average_burst_time = total_burst_time / len(processes)
+   
+    print("\nAverage Turnaround Time:", average_turnaround_time)
+    print("Average Burst Time:", average_burst_time)
+
+num_processes = int(input("Enter the number of processes: "))
+processes = []
+
+for _ in range(num_processes):
+    arrival_time = int(input("Enter arrival time: "))
+    burst_time = int(input("Enter burst time: "))
+    processes.append([arrival_time, burst_time])
+
+calculate_times(processes)
+display_results(processes)
