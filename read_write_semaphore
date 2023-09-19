@@ -1,0 +1,42 @@
+
+from threading import *
+import time
+
+# Semaphores for controlling access
+read_mutex = Semaphore(1)
+resource = Semaphore(1)
+
+# Counters for readers and writers
+readers = 0
+
+def reader():
+    global readers
+    while True:
+        read_mutex.acquire()
+        readers += 1
+        if readers == 1:
+            resource.acquire()  # First reader acquires the resource
+        read_mutex.release()
+       
+        # Read from the shared resource
+        print(f'Reader {current_thread().name} is reading.')
+       
+        read_mutex.acquire()
+        readers -= 1
+        if readers == 0:
+            resource.release()  # Last reader releases the resource
+        read_mutex.release()
+        time.sleep(1)
+
+def writer():
+    while True:
+        # Write to the shared resource
+        resource.acquire()  # Only one writer at a time
+        print(f'Writer {current_thread().name} is writing.')
+        resource.release()
+        time.sleep(2)
+
+# Create reader and writer threads
+for i in range(3):
+    Thread(target=reader, name=f'Reader-{i+1}').start()
+    Thread(target=writer, name=f'Writer-{i+1}').start()
